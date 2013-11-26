@@ -24,9 +24,9 @@ $result = $this->cache->create('test', $modifier);
 
 **Data** represents the reference to information that storage already contains. You can modify or completly replace it inside the callable.
 
-If other client will change data before you call **create** you will get an **AtomicViolationException**. In your client code you can catch this exception and retry operation.
+If other client will change **Data** before you call **create** you will get an **AtomicViolationException**. In your client code you can catch this exception and retry operation.
 
-The main difference betweeen **create** and **update** methods is that **update** will do nothing in case storage does not contain specified key.
+The main difference betweeen **create** and **update** methods is that **update** will do nothing in case storage doesn't contains the specified key.
 
 ### Decorators
 Currently library provides only one additional **HotCacheDecorator** which is very useful in a highloaded environment: it simply stores (and modifies) all cached data in a in-memory array. So if you call **get** once then all subsequent calls will be served only by hot cache without any requests to storage server.
@@ -44,7 +44,7 @@ Library provides simple mechanism to generate cache keys with **generateCacheKey
 ```php
 $key = CacheProvider::generateCacheKey('arg1', 'arg2'); //cache:arg1:arg2
 ```
-You can pass any number (but > 0) of arguments to this method to get a cache key. Also as the first parameter you can pass class name and if this class contains constant field **VERSION** then this constant will be mixed up with other arguments of **generateCacheKey**:
+You can pass any number of arguments (> 0) to this method in order to get a fresh shiny cache key. Also as the first parameter you can pass some class name and if this class will contain constant field **VERSION** then it's value will be mixed up with other arguments of **generateCacheKey**:
 
 ```php
 class Test {
