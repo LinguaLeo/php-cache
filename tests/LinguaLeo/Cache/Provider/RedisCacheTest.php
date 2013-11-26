@@ -11,12 +11,12 @@ class RedisCacheTest extends BaseCacheTest
 
     public function getCache()
     {
-        $redis = $this->getRedisClient();
+        $redis = self::getRedisClient();
         $redis->flushDB();
         return new RedisCache($redis);
     }
 
-    protected function getRedisClient()
+    public static function getRedisClient()
     {
         $redis = new \Redis();
         $redis->connect(self::HOST, self::PORT);

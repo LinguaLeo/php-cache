@@ -65,4 +65,20 @@ class ApcCacheTest extends BaseCacheTest
         parent::testUpdateAtomicViolation();
     }
 
+    /**
+     * @expectedException \BadMethodCallException
+     */
+    public function testMultiSetAndGet()
+    {
+        parent::testMultiSetAndGet();
+    }
+
+    /**
+     * @expectedException \BadMethodCallException
+     */
+    public function testMultiGet()
+    {
+        $this->cache->mget(['test']);
+    }
+
 }

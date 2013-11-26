@@ -13,6 +13,20 @@ interface CacheInterface
     public function get($key);
 
     /**
+     * Get data by array of keys
+     * @param array $keys
+     * @return array
+     */
+    public function mget(array $keys);
+
+    /**
+     * Set data by array of keys
+     * @param array $data
+     * @return bool
+     */
+    public function mset(array $data);
+
+    /**
      * Set data by specified key. Existing key will be replaced by the new one.
      * @param string $key
      * @param mixed $data
@@ -43,9 +57,9 @@ interface CacheInterface
     public function update($key, callable $modifier, $ttl = 0);
 
     /**
-     * Delete key and associated data.
-     * @param string $key
-     * @return bool
+     * Delete key(-s) and associated data.
+     * @param string|array $key
+     * @return int number of deleted keys
      */
     public function delete($key);
 

@@ -111,13 +111,13 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * Delete key and associated data.
-     * @param string $key
-     * @return bool
+     * Delete key(-s) and associated data.
+     * @param string|array $key
+     * @return int number of deleted keys
      */
     public function delete($key)
     {
-        return $this->redis->delete($key) > 0;
+        return $this->redis->delete($key);
     }
 
     /**
@@ -156,6 +156,26 @@ class RedisCache extends CacheProvider
     protected function getSerializerValue()
     {
         return defined('\Redis::SERIALIZER_IGBINARY') ? \Redis::SERIALIZER_IGBINARY : \Redis::SERIALIZER_PHP;
+    }
+
+    /**
+     * Get data by array of keys
+     * @param array $keys
+     * @return array
+     */
+    public function mget(array $keys)
+    {
+        return array_combine($keys, $this->redis->mget($keys));
+    }
+
+    /**
+     * Set data by array of keys
+     * @param array $data
+     * @return bool
+     */
+    public function mset(array $data)
+    {
+        return $this->redis->mset($data);
     }
 
 }

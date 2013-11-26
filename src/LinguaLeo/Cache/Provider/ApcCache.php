@@ -55,13 +55,17 @@ class ApcCache extends CacheProvider
     }
 
     /**
-     * Delete key and associated data.
-     * @param string $key
-     * @return bool
+     * Delete key(-s) and associated data.
+     * @param string|array $key
+     * @return int number of deleted keys
      */
     public function delete($key)
     {
-        return apc_delete($key);
+        if (is_array($key)) {
+            return sizeof($key) - sizeof(apc_delete($key));
+        } else {
+            return apc_delete($key);
+        }
     }
 
     /**
@@ -87,6 +91,28 @@ class ApcCache extends CacheProvider
     public function flush()
     {
         return apc_clear_cache() && apc_clear_cache('user');
+    }
+
+    /**
+     * Get data by array of keys
+     * @param array $keys
+     * @throws \BadMethodCallException
+     * @return array
+     */
+    public function mget(array $keys)
+    {
+        throw new \BadMethodCallException('Multi-get is not provided by APC.');
+    }
+
+    /**
+     * Set data by array of keys
+     * @param array $data
+     * @throws \BadMethodCallException
+     * @return bool
+     */
+    public function mset(array $data)
+    {
+        throw new \BadMethodCallException('Multi-set is not provided by APC.');
     }
 
 }

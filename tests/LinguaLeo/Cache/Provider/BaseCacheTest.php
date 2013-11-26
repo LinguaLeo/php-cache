@@ -45,12 +45,34 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($value, $this->cache->get($key));
     }
 
+    public function testMultiSetAndGet()
+    {
+        $data = [
+            'key1' => 'value1',
+            'key2' => 'value2',
+            'key3' => 'value3',
+        ];
+        $keys = array_keys($data);
+        $this->assertTrue($this->cache->mset($data));
+        $this->assertEquals($data, $this->cache->mget($keys));
+    }
+
     public function testDelete()
     {
         $this->cache->set('test', 'data');
         $this->assertEquals('data', $this->cache->get('test'));
         $this->cache->delete('test');
         $this->assertFalse($this->cache->get('test'));
+    }
+
+    public function testMultiDelete()
+    {
+        $this->cache->set('test1', 'data');
+        $this->cache->set('test2', 'data');
+        $result = $this->cache->delete(['test1', 'test2']);
+        $this->assertEquals(2, $result);
+        $this->assertFalse($this->cache->get('test1'));
+        $this->assertFalse($this->cache->get('test2'));
     }
 
     public function testPositiveIncrement()

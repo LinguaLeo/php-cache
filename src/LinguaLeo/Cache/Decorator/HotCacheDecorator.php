@@ -18,6 +18,7 @@ class HotCacheDecorator implements CacheInterface
 
     /**
      * @param CacheInterface $cache
+     * @throws \RuntimeException
      */
     public function __construct(CacheInterface $cache)
     {
@@ -31,7 +32,6 @@ class HotCacheDecorator implements CacheInterface
      */
     public function get($key)
     {
-        $this->gc();
         if (isset($this->hot[$key])) {
             return $this->hot[$key];
         }
@@ -47,7 +47,6 @@ class HotCacheDecorator implements CacheInterface
      */
     public function set($key, $data, $ttl = 0)
     {
-        $this->gc();
         if ($result = $this->cache->set($key, $data, $ttl)) {
             $this->hot[$key] = $data;
         }
@@ -64,7 +63,6 @@ class HotCacheDecorator implements CacheInterface
      */
     public function create($key, callable $modifier, $ttl = 0)
     {
-        $this->gc();
         if ($data = $this->cache->create($key, $modifier, $ttl)) {
             $this->hot[$key] = $data;
         }
@@ -82,7 +80,6 @@ class HotCacheDecorator implements CacheInterface
      */
     public function update($key, callable $modifier, $ttl = 0)
     {
-        $this->gc();
         if ($data = $this->cache->update($key, $modifier, $ttl)) {
             $this->hot[$key] = $data;
         }
@@ -96,8 +93,10 @@ class HotCacheDecorator implements CacheInterface
      */
     public function delete($key)
     {
-        $this->gc();
-        unset($this->hot[$key]);
+        $key = (array)$key;
+        foreach ($key as $k) {
+            unset($this->hot[$k]);
+        }
         return $this->cache->delete($key);
     }
 
@@ -109,7 +108,6 @@ class HotCacheDecorator implements CacheInterface
      */
     public function increment($key, $value = 1)
     {
-        $this->gc();
         $newValue = $this->cache->increment($key, $value);
         $this->hot[$key] = $newValue;
         return $newValue;
@@ -121,22 +119,47 @@ class HotCacheDecorator implements CacheInterface
      */
     public function flush()
     {
-        $this->gc(true);
+        $this->hot = [];
         return $this->cache->flush();
     }
 
     /**
-     * Garbage collector for CLI applications
-     * @param bool $force
+     * Get data by array of keys
+     * @param array $keys
+     * @return array
      */
-    private function gc($force = false)
+    public function mget(array $keys)
     {
-        if (PHP_SAPI !== 'cli' && $force === false) {
-            return;
+        $result = [];
+        foreach ($keys as $index => $key) {
+            if (!isset($this->hot[$key])) {
+                continue;
+            }
+            $result[$key] = $this->hot[$key];
+            unset($keys[$index]);
         }
-        if ($force || mt_rand(0, 100) % 20 === 0) {
-            $this->hot = [];
+        if (sizeof($keys) > 0) {
+            $cacheResult = $this->cache->mget($keys);
+            foreach ($cacheResult as $key => $value) {
+                $result[$key] = $this->hot[$key] = $value;
+            }
         }
+        return $result;
+    }
+
+    /**
+     * Set data by array of keys
+     * @param array $data
+     * @return bool
+     */
+    public function mset(array $data)
+    {
+        if ($result = $this->cache->mset($data)) {
+            foreach ($data as $key => $value) {
+                $this->hot[$key] = $value;
+            }
+        }
+        return $result;
     }
 
 }
