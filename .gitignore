@@ -1,0 +1,6 @@
+/.idea/
+/vendor/
+rsync.cfg
+/nbproject/
+/build/
+composer.lock
