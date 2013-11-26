@@ -18,7 +18,6 @@ class HotCacheDecorator implements CacheInterface
 
     /**
      * @param CacheInterface $cache
-     * @throws \RuntimeException
      */
     public function __construct(CacheInterface $cache)
     {
