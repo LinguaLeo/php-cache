@@ -18,7 +18,7 @@ class HotCacheDecoratorTest extends BaseCacheTest
     {
         $redis = RedisCacheTest::getRedisClient();
         $this->wrappedCache = new RedisCache($redis);
-        $cache = new HotCacheDecorator($this->wrappedCache);
+        $cache = new TestHotCacheDecorator($this->wrappedCache);
         $cache->flush();
         return $cache;
     }

@@ -15,13 +15,21 @@ class HotCacheDecorator implements CacheInterface
      * @var array
      */
     protected $hot = [];
+    /**
+     * @var bool
+     */
+    protected $isCliRestricted = true;
 
     /**
      * @param CacheInterface $cache
+     * @throws \RuntimeException
      */
     public function __construct(CacheInterface $cache)
     {
         $this->cache = $cache;
+        if (PHP_SAPI === 'cli' && $this->isCliRestricted) {
+            throw new \RuntimeException('Hot cache is not allowed to use in CLI mode.');
+        }
     }
 
     /**
@@ -137,7 +145,7 @@ class HotCacheDecorator implements CacheInterface
             $result[$key] = $this->hot[$key];
             unset($keys[$index]);
         }
-        if (sizeof($keys) > 0) {
+        if (count($keys) > 0) {
             $cacheResult = $this->cache->mget($keys);
             foreach ($cacheResult as $key => $value) {
                 $result[$key] = $this->hot[$key] = $value;

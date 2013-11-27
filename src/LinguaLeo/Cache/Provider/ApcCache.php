@@ -62,7 +62,7 @@ class ApcCache extends CacheProvider
     public function delete($key)
     {
         if (is_array($key)) {
-            return sizeof($key) - sizeof(apc_delete($key));
+            return count($key) - count(apc_delete($key));
         } else {
             return apc_delete($key);
         }
