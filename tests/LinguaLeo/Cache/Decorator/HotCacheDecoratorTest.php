@@ -23,6 +23,14 @@ class HotCacheDecoratorTest extends BaseCacheTest
         return $cache;
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testCliException()
+    {
+        new HotCacheDecorator($this->wrappedCache);
+    }
+
     public function testHotMultiGet()
     {
         $this->wrappedCache->set('test1', 'data1');
