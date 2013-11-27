@@ -15,19 +15,16 @@ class HotCacheDecorator implements CacheInterface
      * @var array
      */
     protected $hot = [];
-    /**
-     * @var bool
-     */
-    protected $isCliRestricted = true;
 
     /**
      * @param CacheInterface $cache
+     * @param bool $isCliRestricted
      * @throws \RuntimeException
      */
-    public function __construct(CacheInterface $cache)
+    public function __construct(CacheInterface $cache, $isCliRestricted = true)
     {
         $this->cache = $cache;
-        if (PHP_SAPI === 'cli' && $this->isCliRestricted) {
+        if (PHP_SAPI === 'cli' && $isCliRestricted) {
             throw new \RuntimeException('Hot cache is not allowed to use in CLI mode.');
         }
     }
