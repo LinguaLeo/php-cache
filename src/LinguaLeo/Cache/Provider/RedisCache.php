@@ -184,7 +184,7 @@ class RedisCache extends CacheProvider
     public function add($key, $data, $ttl = 0)
     {
         $ok = $this->redis->setnx($key, $data);
-        if ($ok) {
+        if ($ok && $ttl > 0) {
             $this->redis->expire($key, (int)$ttl);
         }
         return $ok;
