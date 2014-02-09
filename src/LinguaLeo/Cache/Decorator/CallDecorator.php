@@ -4,16 +4,19 @@ namespace LinguaLeo\Cache\Decorator;
 
 use LinguaLeo\Cache\CacheInterface;
 use LinguaLeo\Cache\Provider\CacheProvider;
+use LinguaLeo\Cache\TTL;
 
 class CallDecorator
 {
     protected $client;
     protected $cache;
+    protected $ttl;
 
-    public function __construct($client, CacheInterface $cache)
+    public function __construct($client, CacheInterface $cache, $ttl = TTL::SHORT)
     {
         $this->client = $client;
         $this->cache = $cache;
+        $this->ttl = $ttl;
     }
 
     public function __call($method, $arguments)
@@ -28,7 +31,7 @@ class CallDecorator
 
         if (false === $result) {
             $result = call_user_func_array([$this->client, $method], $arguments);
-            $this->cache->add($key, $result);
+            $this->cache->add($key, $result, $this->ttl);
         }
 
         return $result;
