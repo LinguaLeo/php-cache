@@ -36,6 +36,15 @@ interface CacheInterface
     public function set($key, $data, $ttl = 0);
 
     /**
+     * Add data of the key, only if the key does not exist.
+     * @param string $key
+     * @param mixed $data
+     * @param int $ttl
+     * @return bool
+     */
+    public function add($key, $data, $ttl = 0);
+
+    /**
      * Atomically create or replace data by the key using callable modifier.
      * @param string $key
      * @param callable $modifier

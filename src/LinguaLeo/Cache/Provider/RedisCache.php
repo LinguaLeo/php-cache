@@ -178,4 +178,15 @@ class RedisCache extends CacheProvider
         return $this->redis->mset($data);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function add($key, $data, $ttl = 0)
+    {
+        $ok = $this->redis->setnx($key, $data);
+        if ($ok) {
+            $this->redis->expire($key, (int)$ttl);
+        }
+        return $ok;
+    }
 }

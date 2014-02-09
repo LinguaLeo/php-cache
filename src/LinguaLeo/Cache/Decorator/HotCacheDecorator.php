@@ -51,7 +51,8 @@ class HotCacheDecorator implements CacheInterface
      */
     public function set($key, $data, $ttl = 0)
     {
-        if ($result = $this->cache->set($key, $data, $ttl)) {
+        $result = $this->cache->set($key, $data, $ttl);
+        if ($result) {
             $this->hot[$key] = $data;
         }
         return $result;
@@ -67,7 +68,8 @@ class HotCacheDecorator implements CacheInterface
      */
     public function create($key, callable $modifier, $ttl = 0)
     {
-        if ($data = $this->cache->create($key, $modifier, $ttl)) {
+        $data = $this->cache->create($key, $modifier, $ttl);
+        if ($data) {
             $this->hot[$key] = $data;
         }
         return $data;
@@ -84,7 +86,8 @@ class HotCacheDecorator implements CacheInterface
      */
     public function update($key, callable $modifier, $ttl = 0)
     {
-        if ($data = $this->cache->update($key, $modifier, $ttl)) {
+        $data = $this->cache->update($key, $modifier, $ttl);
+        if ($data) {
             $this->hot[$key] = $data;
         }
         return $data;
@@ -158,7 +161,8 @@ class HotCacheDecorator implements CacheInterface
      */
     public function mset(array $data)
     {
-        if ($result = $this->cache->mset($data)) {
+        $result = $this->cache->mset($data);
+        if ($result) {
             foreach ($data as $key => $value) {
                 $this->hot[$key] = $value;
             }
@@ -166,4 +170,15 @@ class HotCacheDecorator implements CacheInterface
         return $result;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function add($key, $data, $ttl = 0)
+    {
+        $result = $this->cache->add($key, $data, $ttl);
+        if ($result) {
+            $this->hot[$key] = $data;
+        }
+        return $result;
+    }
 }
