@@ -36,7 +36,7 @@ interface CacheInterface
     public function set($key, $data, $ttl = 0);
 
     /**
-     * Add data of the key, only if the key does not exist.
+     * Set data by specified key only if it does not already exists.
      * @param string $key
      * @param mixed $data
      * @param int $ttl

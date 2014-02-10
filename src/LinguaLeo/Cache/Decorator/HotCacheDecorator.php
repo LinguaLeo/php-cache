@@ -171,7 +171,11 @@ class HotCacheDecorator implements CacheInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Set data by specified key only if it does not already exists.
+     * @param string $key
+     * @param mixed $data
+     * @param int $ttl
+     * @return bool
      */
     public function add($key, $data, $ttl = 0)
     {

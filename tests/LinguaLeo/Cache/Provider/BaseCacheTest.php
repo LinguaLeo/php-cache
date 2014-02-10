@@ -161,6 +161,28 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
         $this->cache->update('test', $modifier);
     }
 
+    public function testAddPositive()
+    {
+        $result = $this->cache->add('test', 'test');
+        $this->assertTrue($result);
+        $this->assertEquals('test', $this->cache->get('test'));
+        $result = $this->cache->add('test2', 'test2', 10);
+        $this->assertTrue($result);
+        $this->assertEquals('test', $this->cache->get('test'));
+    }
+
+    public function testAddNegative()
+    {
+        $result = $this->cache->add('test', 'test');
+        $this->assertTrue($result);
+        $result = $this->cache->add('test', 'test2');
+        $this->assertFalse($result);
+        $this->assertEquals('test', $this->cache->get('test'));
+        $result = $this->cache->add('test', 'test2', 10);
+        $this->assertFalse($result);
+        $this->assertEquals('test', $this->cache->get('test'));
+    }
+
     public function testFlush()
     {
         $this->cache->set('test', 'data');

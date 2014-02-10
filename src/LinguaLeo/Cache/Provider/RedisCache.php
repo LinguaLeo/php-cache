@@ -179,14 +179,24 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * {@inheritdoc}
+     * Set data by specified key only if it does not already exists.
+     * @param string $key
+     * @param mixed $data
+     * @param int $ttl
+     * @return bool
      */
     public function add($key, $data, $ttl = 0)
     {
-        $ok = $this->redis->setnx($key, $data);
-        if ($ok && $ttl > 0) {
-            $this->redis->expire($key, (int)$ttl);
+        if ($ttl > 0) {
+            $uid = uniqid('temp_key', true);
+            $result = $this->redis->multi()
+                ->setex($uid, (int)$ttl, $data)
+                ->renameNx($uid, $key)
+                ->delete($uid)
+                ->exec();
+            return !empty($result[1]);
         }
-        return $ok;
+        return $this->redis->setnx($key, $data);
     }
+
 }
