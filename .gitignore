@@ -1,6 +1,6 @@
-/.idea/
 /vendor/
-rsync.cfg
+/.idea/
 /nbproject/
 /build/
+/.vagrant/
 composer.lock

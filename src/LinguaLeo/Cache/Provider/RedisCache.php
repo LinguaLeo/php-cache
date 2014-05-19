@@ -1,30 +1,64 @@
 <?php
 
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 LinguaLeo
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 namespace LinguaLeo\Cache\Provider;
 
 use LinguaLeo\Cache\Exception\AtomicViolationException;
 
 class RedisCache extends CacheProvider
 {
-
     /**
-     * @var \Redis
+     * @var \Redis|\RedisArray
      */
     protected $redis;
 
     /**
-     * @param \Redis $redis
+     * @param \Redis|\RedisArray $redis
      */
     public function __construct($redis)
     {
         $this->redis = $redis;
-        $this->redis->setOption(\Redis::OPT_SERIALIZER, $this->getSerializerValue());
+        if ($redis->getOption(\Redis::OPT_SERIALIZER) === \Redis::SERIALIZER_NONE) {
+            $this->setupSerializer($redis);
+        }
     }
 
     /**
-     * Get data by key.
-     * @param string $key
-     * @return string
+     * @param \Redis|\RedisArray $redis
+     */
+    private function setupSerializer($redis)
+    {
+        $redis->setOption(
+            \Redis::OPT_SERIALIZER,
+            defined('\Redis::SERIALIZER_IGBINARY') ? \Redis::SERIALIZER_IGBINARY : \Redis::SERIALIZER_PHP
+        );
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function get($key)
     {
@@ -32,11 +66,7 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * Set data by specified key. Existing key will be replaced by the new one.
-     * @param string $key
-     * @param mixed $data
-     * @param int $ttl
-     * @return bool
+     * {@inheritdoc}
      */
     public function set($key, $data, $ttl = 0)
     {
@@ -47,12 +77,7 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * Atomically create or replace data by the key using callable modifier.
-     * @param string $key
-     * @param callable $modifier
-     * @param int $ttl
-     * @throws \LinguaLeo\Cache\Exception\AtomicViolationException
-     * @return mixed added value
+     * {@inheritdoc}
      */
     public function create($key, callable $modifier, $ttl = 0)
     {
@@ -66,13 +91,7 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * Atomically update existing data by the key using callable modifier. If key does not
-     * exists not operations will be performed.
-     * @param string $key
-     * @param callable $modifier
-     * @param int $ttl
-     * @throws \LinguaLeo\Cache\Exception\AtomicViolationException
-     * @return mixed updated value or false if value does not exists
+     * {@inheritdoc}
      */
     public function update($key, callable $modifier, $ttl = 0)
     {
@@ -111,9 +130,7 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * Delete key(-s) and associated data.
-     * @param string|array $key
-     * @return int number of deleted keys
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -121,8 +138,7 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * Flush all cache data
-     * @return bool
+     * {@inheritdoc}
      */
     public function flush()
     {
@@ -130,11 +146,7 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * Atomically increment integer value by the key.
-     * @param $key
-     * @param int $value
-     * @throws \InvalidArgumentException
-     * @return int
+     * {@inheritdoc}
      */
     public function increment($key, $value = 1)
     {
@@ -148,20 +160,7 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * Returns the serializer constant to use. If Redis is compiled with
-     * igbinary support, that is used. Otherwise the default PHP serializer is
-     * used.
-     * @return integer One of the Redis::SERIALIZER_* constants
-     */
-    protected function getSerializerValue()
-    {
-        return defined('\Redis::SERIALIZER_IGBINARY') ? \Redis::SERIALIZER_IGBINARY : \Redis::SERIALIZER_PHP;
-    }
-
-    /**
-     * Get data by array of keys
-     * @param array $keys
-     * @return array
+     * {@inheritdoc}
      */
     public function mget(array $keys)
     {
@@ -169,9 +168,7 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * Set data by array of keys
-     * @param array $data
-     * @return bool
+     * {@inheritdoc}
      */
     public function mset(array $data)
     {
@@ -179,11 +176,7 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * Set data by specified key only if it does not already exists.
-     * @param string $key
-     * @param mixed $data
-     * @param int $ttl
-     * @return bool
+     * {@inheritdoc}
      */
     public function add($key, $data, $ttl = 0)
     {
@@ -198,5 +191,4 @@ class RedisCache extends CacheProvider
         }
         return $this->redis->setnx($key, $data);
     }
-
 }

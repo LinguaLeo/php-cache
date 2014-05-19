@@ -13,11 +13,11 @@
         "php": ">=5.4.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.8.*@dev"
+        "ext-redis": "*"
     },
     "autoload": {
         "psr-0": {
-            "LinguaLeo\\": "src/"
+            "LinguaLeo\\Cache\\": "src/"
         }
     }
 }

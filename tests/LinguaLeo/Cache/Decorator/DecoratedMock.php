@@ -24,26 +24,12 @@
  * SOFTWARE.
  */
 
-namespace LinguaLeo\Cache\Provider;
+namespace LinguaLeo\Cache\Decorator;
 
-class RedisCacheTest extends BaseCacheTest
+class DecoratedMock
 {
-    const HOST = '192.168.57.94'; // looks at Vagrantfile in the project root
-    const PORT = 6379;
-    const DB_INDEX = 15;
-
-    public function getCache()
+    public function getUnique()
     {
-        $redis = self::getRedisClient();
-        $redis->flushDB();
-        return new RedisCache($redis);
-    }
-
-    public static function getRedisClient()
-    {
-        $redis = new \Redis();
-        $redis->connect(self::HOST, self::PORT);
-        $redis->select(self::DB_INDEX);
-        return $redis;
+        return uniqid();
     }
 }

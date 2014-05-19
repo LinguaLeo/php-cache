@@ -24,26 +24,48 @@
  * SOFTWARE.
  */
 
-namespace LinguaLeo\Cache\Provider;
+namespace LinguaLeo\Cache\Decorator;
 
-class RedisCacheTest extends BaseCacheTest
+use LinguaLeo\Cache\Provider\RedisCacheTest;
+use LinguaLeo\Cache\Provider\RedisCache;
+
+class CallDecoratorTest extends \PHPUnit_Framework_TestCase
 {
-    const HOST = '192.168.57.94'; // looks at Vagrantfile in the project root
-    const PORT = 6379;
-    const DB_INDEX = 15;
+    /**
+     * @var \LinguaLeo\Cache\CacheInterface
+     */
+    protected $cache;
 
     public function getCache()
     {
-        $redis = self::getRedisClient();
+        $redis = RedisCacheTest::getRedisClient();
         $redis->flushDB();
         return new RedisCache($redis);
     }
 
-    public static function getRedisClient()
+    public function setUp()
     {
-        $redis = new \Redis();
-        $redis->connect(self::HOST, self::PORT);
-        $redis->select(self::DB_INDEX);
-        return $redis;
+        $this->cache = $this->getCache();
+    }
+
+    private function createDecorator($client)
+    {
+        return new CallDecorator($client, $this->cache);
+    }
+
+    public function testCallMethod()
+    {
+        $decorator = $this->createDecorator(new DecoratedMock());
+        /* @var $decorator DecoratedMock */
+        $this->assertSame($decorator->getUnique(), $decorator->getUnique());
+    }
+
+    /**
+     * @expectedException \ReflectionException
+     * @expectedExceptionMessage Class 1 does not exist
+     */
+    public function testCallMethodOnANonObject()
+    {
+        $this->createDecorator(1)->doSomething();
     }
 }
