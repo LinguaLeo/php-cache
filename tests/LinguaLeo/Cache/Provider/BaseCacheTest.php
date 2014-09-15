@@ -78,7 +78,7 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
             'key3' => 'value3',
         ];
         $keys = array_keys($data);
-        $this->assertTrue($this->cache->mset($data));
+        $this->assertEquals(3,$this->cache->mset($data));
         $this->assertEquals($data, $this->cache->mget($keys));
     }
 
@@ -89,13 +89,26 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
         $this->cache->delete('test');
         $this->assertFalse($this->cache->get('test'));
     }
+    public function testDeleteEmpty()
+    {
+        $this->assertEquals(false, $this->cache->delete('test'));
+    }
+
 
     public function testMultiDelete()
     {
         $this->cache->set('test1', 'data');
         $this->cache->set('test2', 'data');
-        $result = $this->cache->delete(['test1', 'test2']);
-        $this->assertEquals(2, $result);
+        $this->assertEquals(2, $this->cache->mdelete(['test1', 'test2']));
+        $this->assertFalse($this->cache->get('test1'));
+        $this->assertFalse($this->cache->get('test2'));
+
+    }
+    public function testMultiDeleteEmpty()
+    {
+        $this->cache->set('test1', 'data');
+        $this->cache->set('test2', 'data');
+        $this->assertEquals(2, $this->cache->mdelete(['test1', 'test2','test3']));
         $this->assertFalse($this->cache->get('test1'));
         $this->assertFalse($this->cache->get('test2'));
     }

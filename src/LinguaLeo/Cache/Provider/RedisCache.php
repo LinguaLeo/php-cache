@@ -42,19 +42,8 @@ class RedisCache extends CacheProvider
     {
         $this->redis = $redis;
         if ($redis->getOption(\Redis::OPT_SERIALIZER) === \Redis::SERIALIZER_NONE) {
-            $this->setupSerializer($redis);
+            $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
         }
-    }
-
-    /**
-     * @param \Redis|\RedisArray $redis
-     */
-    private function setupSerializer($redis)
-    {
-        $redis->setOption(
-            \Redis::OPT_SERIALIZER,
-            defined('\Redis::SERIALIZER_IGBINARY') ? \Redis::SERIALIZER_IGBINARY : \Redis::SERIALIZER_PHP
-        );
     }
 
     /**
@@ -140,6 +129,20 @@ class RedisCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
+    public function mdelete(array $keys)
+    {
+        $count = 0;
+        foreach ($keys as $key) {
+            if ($this->delete($key)) {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function flush()
     {
         return $this->redis->flushDB();
@@ -170,10 +173,17 @@ class RedisCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    public function mset(array $data)
+    public function mset(array $data, $ttl = 0)
     {
-        return $this->redis->mset($data);
+        $count = 0;
+        foreach ($data as $key => $value) {
+            if ($this->set($key, $value, $ttl)) {
+                $count++;
+            }
+        }
+        return $count;
     }
+
 
     /**
      * {@inheritdoc}
