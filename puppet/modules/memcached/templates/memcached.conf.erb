@@ -1,0 +1,17 @@
+-d
+
+logfile /var/log/memcached.log
+
+-m <%= @memory %>
+
+-p <%= @port %>
+
+-u <%= @user %>
+
+-l <%= @listen %>
+
+-c <%= @connections_limit %>
+
+<% if @max_core_file_limit -%>
+-r
+<% end -%>
