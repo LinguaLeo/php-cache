@@ -123,7 +123,7 @@ class RedisCache extends CacheProvider
      */
     public function delete($key)
     {
-        return $this->redis->delete($key);
+        return (bool)$this->redis->delete($key);
     }
 
     /**

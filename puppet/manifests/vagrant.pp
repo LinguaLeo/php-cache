@@ -7,5 +7,7 @@ package {
 class { 'redis':
     max_memory => '64mb',
     memory_policy => 'allkeys-lru',
-    snapshotting => {}
+    snapshotting => {};
+    'memcached':
+     listen => '0.0.0.0'
 }

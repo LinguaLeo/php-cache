@@ -29,6 +29,7 @@ namespace LinguaLeo\Cache\Decorator;
 use LinguaLeo\Cache\Provider\RedisCacheTest;
 use LinguaLeo\Cache\Provider\RedisCache;
 
+
 class CallDecoratorTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -61,6 +62,16 @@ class CallDecoratorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testCallUndefinedMethod()
+     {
+         $decorator = $this->createDecorator(new DecoratedMock());
+        /* @var $decorator DecoratedMock */
+         $decorator->undefinedMethod();
+     }
+
+    /**
      * @expectedException \ReflectionException
      * @expectedExceptionMessage Class 1 does not exist
      */
@@ -68,4 +79,5 @@ class CallDecoratorTest extends \PHPUnit_Framework_TestCase
     {
         $this->createDecorator(1)->doSomething();
     }
+
 }

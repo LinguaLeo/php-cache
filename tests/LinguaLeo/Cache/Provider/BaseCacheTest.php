@@ -27,6 +27,7 @@
 namespace LinguaLeo\Cache\Provider;
 
 use LinguaLeo\Cache\CacheInterface;
+use LinguaLeo\Cache\Exception\AtomicViolationException;
 
 abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,6 +62,7 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
             ['test', 10]
         ];
     }
+
     /**
      * @dataProvider testSetAndGetProvider
      */
@@ -75,12 +77,12 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
         $data = [
             'key1' => 'value1',
             'key2' => 'value2',
-            'key3' => 'value3',
+            'key3' => 'value3'
         ];
         $keys = array_keys($data);
         $this->assertEquals(3,$this->cache->mset($data));
         $this->assertEquals($data, $this->cache->mget($keys));
-    }
+     }
 
     public function testDelete()
     {
@@ -102,7 +104,6 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, $this->cache->mdelete(['test1', 'test2']));
         $this->assertFalse($this->cache->get('test1'));
         $this->assertFalse($this->cache->get('test2'));
-
     }
     public function testMultiDeleteEmpty()
     {
@@ -115,10 +116,10 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testPositiveIncrement()
     {
-        $this->assertEquals(1, $this->cache->increment('test'));
-        $this->assertEquals(1, $this->cache->get('test'));
-        $this->assertEquals(3, $this->cache->increment('test', 2));
-        $this->assertEquals(3, $this->cache->get('test'));
+       $this->assertEquals(1, $this->cache->increment('test'));
+       $this->assertEquals(1, $this->cache->get('test'));
+       $this->assertEquals(3, $this->cache->increment('test', 2));
+       $this->assertEquals(3, $this->cache->get('test'));
     }
 
     /**
@@ -150,7 +151,6 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['value1', 'value3'], $result);
         $this->assertEquals(['value1', 'value3'], $this->cache->get('test'));
     }
-
     /**
      * @expectedException \LinguaLeo\Cache\Exception\AtomicViolationException
      */
@@ -161,7 +161,7 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
             $this->cache->set('test', 'corrupted'); //atomic violation
             $data = 'value';
         };
-        $this->cache->create('test', $modifier);
+        $res = $this->cache->create('test', $modifier);
     }
 
     public function testUpdate()
@@ -179,6 +179,8 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
     public function testUpdateThatNotExists()
     {
         $modifier = function(&$data) {
+            $data = 'newData';
+            $data = 'newData';
             $data = 'newData';
         };
         $this->assertFalse($this->cache->update('test', $modifier));
