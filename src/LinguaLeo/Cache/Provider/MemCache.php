@@ -168,8 +168,8 @@ class MemCache extends CacheProvider
     {
         $count = 0;
         /**
-         * @array Массив с ключем по которому удаляли, значение если операция прошла успешно true,
-         * в противном случае то значение, которое устанавливали в методе deleteMulti
+         * @array An array with a kesys which was deleted, the value if the operation was successful true,
+         * otherwise the value that was set in the method deleteMulti
          */
         $resultsDelete = $this->memcached->deleteMulti($keys);
         foreach ($resultsDelete as $key => $resultDelete) {

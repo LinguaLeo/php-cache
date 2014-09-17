@@ -131,13 +131,7 @@ class RedisCache extends CacheProvider
      */
     public function mdelete(array $keys)
     {
-        $count = 0;
-        foreach ($keys as $key) {
-            if ($this->delete($key)) {
-                $count++;
-            }
-        }
-        return $count;
+        return $this->redis->delete($keys);
     }
 
     /**
@@ -175,12 +169,11 @@ class RedisCache extends CacheProvider
      */
     public function mset(array $data, $ttl = 0)
     {
-      if ($ttl === 0) {
+        if ($ttl === 0) {
             if ($this->redis->mset($data)) {
                 return count($data);
-            } else {
-                return 0;
             }
+            return 0;
         }
         $count = 0;
         foreach ($data as $key => $value) {
