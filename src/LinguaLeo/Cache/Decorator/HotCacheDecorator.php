@@ -105,11 +105,19 @@ class HotCacheDecorator implements CacheInterface
      */
     public function delete($key)
     {
-        $key = (array)$key;
-        foreach ($key as $k) {
+        unset($this->hot[$key]);
+        return $this->cache->delete($key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function mdelete(array $keys)
+    {
+        foreach ($keys as $k) {
             unset($this->hot[$k]);
         }
-        return $this->cache->delete($key);
+        return $this->cache->mdelete($keys);
     }
 
     /**
@@ -156,9 +164,9 @@ class HotCacheDecorator implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function mset(array $data)
+    public function mset(array $data, $ttl = 0)
     {
-        $result = $this->cache->mset($data);
+        $result = $this->cache->mset($data, $ttl);
         if ($result) {
             foreach ($data as $key => $value) {
                 $this->hot[$key] = $value;

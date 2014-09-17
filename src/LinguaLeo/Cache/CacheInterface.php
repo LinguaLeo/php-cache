@@ -45,14 +45,6 @@ interface CacheInterface
     public function mget(array $keys);
 
     /**
-     * Set data by array of keys
-     *
-     * @param array $data
-     * @return bool
-     */
-    public function mset(array $data);
-
-    /**
      * Set data by specified key. Existing key will be replaced by the new one.
      *
      * @param string $key
@@ -61,6 +53,15 @@ interface CacheInterface
      * @return bool
      */
     public function set($key, $data, $ttl = 0);
+
+    /**
+     * Set data by array of keys
+     *
+     * @param array $data
+     * @param int $ttl
+     * @return int number of deleted keys
+     */
+    public function mset(array $data, $ttl = 0);
 
     /**
      * Set data by specified key only if it does not already exists.
@@ -96,12 +97,20 @@ interface CacheInterface
     public function update($key, callable $modifier, $ttl = 0);
 
     /**
-     * Delete key(-s) and associated data.
+     * Delete a key.
      *
-     * @param string|array $key
-     * @return int number of deleted keys
+     * @param string $key
+     * @return bool
      */
     public function delete($key);
+
+    /**
+     * Delete keys.
+     *
+     * @param array $keys
+     * @return int number of deleted keys
+     */
+    public function mdelete(array $keys);
 
     /**
      * Atomically increment integer value by the key.

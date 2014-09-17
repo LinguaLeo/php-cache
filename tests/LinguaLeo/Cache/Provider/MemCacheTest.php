@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The MIT License (MIT)
  *
@@ -26,36 +25,45 @@
 
 namespace LinguaLeo\Cache\Provider;
 
-class RedisCacheTest extends BaseCacheTest
+use LinguaLeo\Cache\Provider\MemcachedProvider;
+
+class MemCacheTest extends BaseCacheTest
 {
+
     const HOST = '192.168.57.94'; // looks at Vagrantfile in the project root
-    const PORT = 6379;
-    const DB_INDEX = 15;
+    const PORT = 11211;
 
     public function getCache()
     {
-        $redis = self::getRedisClient();
-        $redis->flushDB();
-        return new RedisCache($redis);
-    }
-
-    public static function getRedisClient()
-    {
-        $redis = new \Redis();
-        $redis->connect(self::HOST, self::PORT);
-        $redis->select(self::DB_INDEX);
-        return $redis;
+        $memcached = new \Memcached();
+        $memcached->addServer(self::HOST, self::PORT);
+        $cache = new MemCache($memcached);
+        $cache->flush();
+        return $cache;
     }
 
     public function testErrorMultiSet()
     {
-        $wrappedRedis = $this->getMock(
-            \Redis::class,
-            ['mset', 'getOption']
+        $memcached = $this->getMock(
+            \Memcached::class,
+            ['setMulti']
         );
-        $wrappedRedis->expects($this->once())->method('mset')->will($this->returnValue(false));
-        $wrappedRedis->expects($this->once())->method('getOption')->will($this->returnValue(false));
-        $redisProvider = new RedisCache($wrappedRedis);
-        $this->assertEquals(0, $redisProvider->mset([], 0));
+        $memcached->expects($this->once())->method('setMulti')->will($this->returnValue(false));
+        $cacheProvider = new MemCache($memcached);
+        $this->assertEquals(0, $cacheProvider->mset([]));
+    }
+
+    /**
+     * @expectedException \LinguaLeo\Cache\Exception\AtomicViolationException
+     */
+    public function testErrorIncrement()
+    {
+        $memcached = $this->getMock(
+            \Memcached::class,
+            ['add']
+        );
+        $memcached->expects($this->once())->method('add')->will($this->returnValue(false));
+        $cacheProvider = new MemCache($memcached);
+        $this->assertFalse($cacheProvider->increment('test'));
     }
 }

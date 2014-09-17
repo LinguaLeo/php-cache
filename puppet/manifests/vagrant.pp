@@ -4,8 +4,11 @@ package {
     'vim': ensure => installed;
 }
 
-class { 'redis':
-    max_memory => '64mb',
-    memory_policy => 'allkeys-lru',
-    snapshotting => {}
+class {
+    'redis':
+        max_memory => '64mb',
+        memory_policy => 'allkeys-lru',
+        snapshotting => {};
+    'memcached':
+        listen => '0.0.0.0';
 }
