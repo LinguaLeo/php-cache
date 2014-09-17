@@ -80,9 +80,9 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
             'key3' => 'value3'
         ];
         $keys = array_keys($data);
-        $this->assertEquals(3,$this->cache->mset($data));
+        $this->assertEquals(3, $this->cache->mset($data));
         $this->assertEquals($data, $this->cache->mget($keys));
-     }
+    }
 
     public function testMultiSetAndGetTtl()
     {
@@ -92,7 +92,7 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
             'key3' => 'value3'
         ];
         $keys = array_keys($data);
-        $this->assertEquals(3,$this->cache->mset($data,10));
+        $this->assertEquals(3, $this->cache->mset($data, 10));
         $this->assertEquals($data, $this->cache->mget($keys));
     }
 
@@ -104,6 +104,7 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
         $this->cache->delete('test');
         $this->assertFalse($this->cache->get('test'));
     }
+
     public function testDeleteEmpty()
     {
         $this->assertEquals(false, $this->cache->delete('test'));
@@ -118,21 +119,22 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->cache->get('test1'));
         $this->assertFalse($this->cache->get('test2'));
     }
+
     public function testMultiDeleteEmpty()
     {
         $this->cache->set('test1', 'data');
         $this->cache->set('test2', 'data');
-        $this->assertEquals(2, $this->cache->mdelete(['test1', 'test2','test3']));
+        $this->assertEquals(2, $this->cache->mdelete(['test1', 'test2', 'test3']));
         $this->assertFalse($this->cache->get('test1'));
         $this->assertFalse($this->cache->get('test2'));
     }
 
     public function testPositiveIncrement()
     {
-       $this->assertEquals(1, $this->cache->increment('test'));
-       $this->assertEquals(1, $this->cache->get('test'));
-       $this->assertEquals(3, $this->cache->increment('test', 2));
-       $this->assertEquals(3, $this->cache->get('test'));
+        $this->assertEquals(1, $this->cache->increment('test'));
+        $this->assertEquals(1, $this->cache->get('test'));
+        $this->assertEquals(3, $this->cache->increment('test', 2));
+        $this->assertEquals(3, $this->cache->get('test'));
     }
 
     /**
@@ -146,7 +148,7 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateNew()
     {
-        $modifier = function(&$data) {
+        $modifier = function (&$data) {
             $data = 'value';
         };
         $result = $this->cache->create('test', $modifier);
@@ -157,20 +159,21 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
     public function testCreateWithReplace()
     {
         $this->cache->set('test', ['value1', 'value2']);
-        $modifier = function(&$data) {
+        $modifier = function (&$data) {
             $data[1] = 'value3';
         };
         $result = $this->cache->create('test', $modifier, 10);
         $this->assertEquals(['value1', 'value3'], $result);
         $this->assertEquals(['value1', 'value3'], $this->cache->get('test'));
     }
+
     /**
      * @expectedException \LinguaLeo\Cache\Exception\AtomicViolationException
      */
     public function testCreateAtomicViolation()
     {
         $this->assertFalse($this->cache->get('test'));
-        $modifier = function(&$data) {
+        $modifier = function (&$data) {
             $this->cache->set('test', 'corrupted'); //atomic violation
             $data = 'value';
         };
@@ -181,7 +184,7 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->cache->set('test', 'data');
         $this->assertEquals('data', $this->cache->get('test'));
-        $modifier = function(&$data) {
+        $modifier = function (&$data) {
             $data = 'newData';
         };
         $result = $this->cache->update('test', $modifier, 10);
@@ -191,7 +194,7 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testUpdateThatNotExists()
     {
-        $modifier = function(&$data) {
+        $modifier = function (&$data) {
             $data = 'newData';
             $data = 'newData';
             $data = 'newData';
@@ -207,7 +210,7 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->cache->set('test', 'data');
         $this->assertEquals('data', $this->cache->get('test'));
-        $modifier = function(&$data) {
+        $modifier = function (&$data) {
             $this->cache->set('test', 'corrupted'); //atomic violation
             $data = 'newData';
         };
