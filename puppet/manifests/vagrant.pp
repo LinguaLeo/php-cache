@@ -9,5 +9,5 @@ class { 'redis':
     memory_policy => 'allkeys-lru',
     snapshotting => {};
     'memcached':
-     listen => '0.0.0.0'
+    listen => '0.0.0.0'
 }

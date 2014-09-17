@@ -69,7 +69,7 @@ class CallDecorator
     {
         $reflection = new \ReflectionClass($this->decoratedObject);
         if (!$reflection->hasMethod($method)) {
-            throw new \InvalidArgumentException('"'.$method.'" is not method of class '.$reflection->name);
+            throw new \InvalidArgumentException('"' . $method . '" is not method of class ' . $reflection->name);
         }
         $key = CacheProvider::generateCacheKey($reflection->name, $method, md5(var_export($arguments, true)));
         $result = $this->cache->get($key);

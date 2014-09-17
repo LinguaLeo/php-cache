@@ -68,7 +68,7 @@ class MemCache extends CacheProvider
     public function mset(array $data, $ttl = 0)
     {
         if ($this->memcached->setMulti($data, $ttl)) {
-            return sizeof($data);
+            return count($data);
         }
         return 0;
     }
@@ -119,11 +119,10 @@ class MemCache extends CacheProvider
         $data = $this->memcached->get($key, null, $token);
         if (false === $data) {
             return false;
-        } else {
-            $modifier($data);
-            if ($this->memcached->cas($token, $key, $data, $ttl)) {
-                return $data;
-            }
+        }
+        $modifier($data);
+        if ($this->memcached->cas($token, $key, $data, $ttl)) {
+            return $data;
         }
         throw new AtomicViolationException("Atomic violation occurred when updating key \"{$key}\".");
     }
@@ -146,7 +145,9 @@ class MemCache extends CacheProvider
         }
         $result = $this->memcached->increment($key, $value);
         if (false === $result) {
-            $this->add($key, $value);
+            if (false === $this->add($key, $value)) {
+                throw new AtomicViolationException("In incremention can't add key \"{$key}\"");
+            }
             $result = $value;
         }
         return $result;
@@ -166,13 +167,17 @@ class MemCache extends CacheProvider
     public function mdelete(array $keys)
     {
         $count = 0;
-        $results = $this->memcached->deleteMulti($keys);
-        foreach ($results as $key => $res)
-        {
-            if ($res === true)
+        /**
+         * @array Массив с ключем по которому удаляли, значение если операция прошла успешно true,
+         * в противном случае то значение, которое устанавливали в методе deleteMulti
+         */
+        $resultsDelete = $this->memcached->deleteMulti($keys);
+        foreach ($resultsDelete as $key => $resultDelete) {
+            if ($resultDelete === true) {
                 $count++;
+            }
         }
         return $count;
-     }
+    }
 
 }
