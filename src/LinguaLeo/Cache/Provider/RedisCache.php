@@ -175,6 +175,13 @@ class RedisCache extends CacheProvider
      */
     public function mset(array $data, $ttl = 0)
     {
+      if ($ttl === 0) {
+            if ($this->redis->mset($data)) {
+                return count($data);
+            } else {
+                return 0;
+            }
+        }
         $count = 0;
         foreach ($data as $key => $value) {
             if ($this->set($key, $value, $ttl)) {

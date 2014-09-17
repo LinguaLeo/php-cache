@@ -46,4 +46,16 @@ class RedisCacheTest extends BaseCacheTest
         $redis->select(self::DB_INDEX);
         return $redis;
     }
+
+    public function testErrorMultiSet()
+    {
+        $wrappedRedis = $this->getMock(
+            \Redis::class,
+            ['mset', 'getOption']
+        );
+        $wrappedRedis->expects($this->once())->method('mset')->will($this->returnValue(false));
+        $wrappedRedis->expects($this->once())->method('getOption')->will($this->returnValue(false));
+        $redisProvider = new RedisCache($wrappedRedis);
+        $this->assertEquals(0, $redisProvider->mset([], 0));
+    }
 }
