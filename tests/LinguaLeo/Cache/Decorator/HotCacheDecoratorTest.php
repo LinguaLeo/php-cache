@@ -60,9 +60,8 @@ class HotCacheDecoratorTest extends BaseCacheTest
         $this->cache->set('test2', 'data2');
         $data = [
             'test1' => 'data1',
-            'test2' => 'data2',
-            'test3' => false,
+            'test2' => 'data2'
         ];
-        $this->assertEquals($data, $this->cache->mget(['test1', 'test2', 'test3']));
+        $this->assertEquals($data, $this->cache->mget(['test1', 'test2']));
     }
 }
