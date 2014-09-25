@@ -38,12 +38,10 @@ class RedisCache extends CacheProvider
     /**
      * @param \Redis|\RedisArray $redis
      */
+
     public function __construct($redis)
     {
         $this->redis = $redis;
-        if ($redis->getOption(\Redis::OPT_SERIALIZER) === \Redis::SERIALIZER_NONE) {
-            $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
-        }
     }
 
     /**
