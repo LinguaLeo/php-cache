@@ -44,6 +44,9 @@ class RedisCacheTest extends BaseCacheTest
         $redis = new \Redis();
         $redis->connect(self::HOST, self::PORT);
         $redis->select(self::DB_INDEX);
+        if ($redis->getOption(\Redis::OPT_SERIALIZER) === \Redis::SERIALIZER_NONE) {
+            $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+        }
         return $redis;
     }
 
@@ -51,11 +54,16 @@ class RedisCacheTest extends BaseCacheTest
     {
         $wrappedRedis = $this->getMock(
             \Redis::class,
-            ['mset', 'getOption']
+            ['mset']
         );
         $wrappedRedis->expects($this->once())->method('mset')->will($this->returnValue(false));
-        $wrappedRedis->expects($this->once())->method('getOption')->will($this->returnValue(false));
         $redisProvider = new RedisCache($wrappedRedis);
         $this->assertEquals(0, $redisProvider->mset([], 0));
+    }
+
+    public function testSetObject()
+    {
+        $this->cache->set('test', [1, 2]);
+        $this->assertEquals([1, 2], $this->cache->get('test'));
     }
 }
