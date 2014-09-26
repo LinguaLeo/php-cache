@@ -84,6 +84,16 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($data, $this->cache->mget($keys));
     }
 
+    public function testMultiGetSomeEmpty()
+    {
+        $data = [
+            'key1' => 'value1',
+            'key2' => 'value2'
+        ];
+        $this->assertEquals(2, $this->cache->mset($data));
+        $this->assertEquals($data, $this->cache->mget(['key1','key2','key3']));
+    }
+
     public function testMultiSetAndGetTtl()
     {
         $data = [
