@@ -187,7 +187,7 @@ abstract class BaseCacheTest extends \PHPUnit_Framework_TestCase
             $this->cache->set('test', 'corrupted'); //atomic violation
             $data = 'value';
         };
-        $res = $this->cache->create('test', $modifier);
+        $this->cache->create('test', $modifier);
     }
 
     public function testUpdate()
