@@ -160,7 +160,7 @@ class MemCache extends CacheProvider
         $result = $this->memcached->increment($key, $value);
         if (false === $result) {
             if (false === $this->add($key, $value)) {
-                throw new AtomicViolationException(sprintf('In incremention can\'t add key "%s" ', $key));
+                throw new AtomicViolationException(sprintf('In incremention can\'t add key "%s".', $key));
             }
             $result = $value;
         }
