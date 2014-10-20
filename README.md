@@ -54,3 +54,12 @@ class Test {
 $key = CacheProvider::generateCacheKey('Test', 'arg1', 'arg2'); //cache:Test:arg1:arg2:2
 ```
 This behavior is very useful when you work with ORM models and want to cache different versions of objects without need to drop all cache data after making some changes in a small single model.
+
+### Testing
+
+Setup [Vagrant](https://www.vagrantup.com/downloads.html) and [Virtualbox](https://www.virtualbox.org/wiki/Downloads).
+
+```bash
+vagrant up
+phpunit
+```
