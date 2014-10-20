@@ -105,7 +105,14 @@ class MemCache extends CacheProvider
             $result = $this->memcached->cas($token, $key, $data, $ttl);
         }
         if (!$result) {
-            throw new AtomicViolationException("Atomic violation occurred when adding key \"{$key}\".");
+            throw new AtomicViolationException(
+                sprintf(
+                    'Atomic violation occurred when adding key "%s" token "%g" result code "%d".',
+                    $key,
+                    $token,
+                    $this->memcached->getResultCode()
+                )
+            );
         }
         return $data;
     }
@@ -124,7 +131,14 @@ class MemCache extends CacheProvider
         if ($this->memcached->cas($token, $key, $data, $ttl)) {
             return $data;
         }
-        throw new AtomicViolationException("Atomic violation occurred when updating key \"{$key}\".");
+        throw new AtomicViolationException(
+            sprintf(
+                'Atomic violation occurred when updating key "%s" token "%g" result code "%d".',
+                $key,
+                $token,
+                $this->memcached->getResultCode()
+            )
+        );
     }
 
     /**
@@ -146,7 +160,7 @@ class MemCache extends CacheProvider
         $result = $this->memcached->increment($key, $value);
         if (false === $result) {
             if (false === $this->add($key, $value)) {
-                throw new AtomicViolationException("In incremention can't add key \"{$key}\"");
+                throw new AtomicViolationException(sprintf('In incremention can\'t add key "%s".', $key));
             }
             $result = $value;
         }
