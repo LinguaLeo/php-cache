@@ -107,10 +107,10 @@ class MemCache extends CacheProvider
         if (!$result) {
             throw new AtomicViolationException(
                 sprintf(
-                    'Atomic violation occurred when adding key "%s" token "%g" result code "%d".',
+                    'Atomic violation occurred "%s" when adding the key "%s" with the token "%g".',
+                    $this->memcached->getResultMessage(),
                     $key,
-                    $token,
-                    $this->memcached->getResultCode()
+                    $token
                 )
             );
         }
@@ -133,10 +133,10 @@ class MemCache extends CacheProvider
         }
         throw new AtomicViolationException(
             sprintf(
-                'Atomic violation occurred when updating key "%s" token "%g" result code "%d".',
+                'Atomic violation occurred "%s" when updating the key "%s" with the token "%g".',
+                $this->memcached->getResultMessage(),
                 $key,
-                $token,
-                $this->memcached->getResultCode()
+                $token
             )
         );
     }
