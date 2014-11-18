@@ -153,7 +153,7 @@ class HotCacheDecorator implements CacheInterface
             unset($keys[$index]);
         }
         if (count($keys) > 0) {
-            $cacheResult = $this->cache->mget($keys);
+            $cacheResult = $this->cache->mget(array_values($keys));
             foreach ($cacheResult as $key => $value) {
                 $result[$key] = $this->hot[$key] = $value;
             }

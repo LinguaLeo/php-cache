@@ -64,4 +64,17 @@ class HotCacheDecoratorTest extends BaseCacheTest
         ];
         $this->assertEquals($data, $this->cache->mget(['test1', 'test2']));
     }
+
+    public function testHotSeveralMultiGet()
+    {
+        $this->wrappedCache->set('test1', 'data1');
+        $this->wrappedCache->set('test2', 'data2');
+        $data = [
+            'test1' => 'data1',
+            'test2' => 'data2'
+        ];
+
+        $this->assertEquals(['test1' => 'data1'], $this->cache->mget(['test1']));
+        $this->assertEquals($data, $this->cache->mget(['test1', 'test2']));
+    }
 }
