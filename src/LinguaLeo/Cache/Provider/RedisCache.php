@@ -105,11 +105,11 @@ class RedisCache extends CacheProvider
     private function setInTransaction($key, $data, $ttl = 0)
     {
         if ($ttl > 0) {
-            $result = $this->redis->multi()
+            $result = $this->multi($key)
                 ->setex($key, (int)$ttl, $data)
                 ->exec();
         } else {
-            $result = $this->redis->multi()
+            $result = $this->multi($key)
                 ->set($key, $data)
                 ->exec();
         }
@@ -197,7 +197,7 @@ class RedisCache extends CacheProvider
     {
         if ($ttl > 0) {
             $uid = uniqid('temp_key', true);
-            $result = $this->redis->multi()
+            $result = $this->multi($key)
                 ->setex($uid, (int)$ttl, $data)
                 ->renameNx($uid, $key)
                 ->delete($uid)
@@ -205,5 +205,18 @@ class RedisCache extends CacheProvider
             return !empty($result[1]);
         }
         return $this->redis->setnx($key, $data);
+    }
+
+    /**
+     * @param string $key
+     * @return \Redis
+     */
+    protected function multi($key)
+    {
+        if ($this->redis instanceof \RedisArray) {
+            $host = $this->redis->_target($key);
+            return $this->redis->multi($host);
+        }
+        return $this->redis->multi();
     }
 }
