@@ -66,4 +66,28 @@ class RedisCacheTest extends BaseCacheTest
         $this->cache->set('test', [1, 2]);
         $this->assertEquals([1, 2], $this->cache->get('test'));
     }
+
+    public function testMultiGet()
+    {
+        $wrappedRedis = $this->getMock(\Redis::class, ['mget']);
+        $wrappedRedis->expects($this->once())->method('mget')->will(
+            $this->returnValue(
+                [
+                    'Object25',
+                    false,
+                    'Object1'
+                ]
+            )
+        );
+
+        $redisProvider = new RedisCache($wrappedRedis);
+        $this->assertEquals(
+            [
+                'cache/25' => 'Object25',
+                'cache/1' => 'Object1',
+
+            ],
+            $redisProvider->mget([25 => 'cache/25', 10 => 'cache/10', 1 => 'cache/1'])
+        );
+    }
 }

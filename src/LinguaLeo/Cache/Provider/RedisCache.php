@@ -160,6 +160,8 @@ class RedisCache extends CacheProvider
     public function mget(array $keys)
     {
         $result = array();
+        $keys = array_values($keys);
+
         $values = $this->redis->mget($keys);
         foreach ($values as $i => $value) {
             if ($value !== false) {
