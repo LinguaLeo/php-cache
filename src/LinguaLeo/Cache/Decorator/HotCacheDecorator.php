@@ -140,6 +140,14 @@ class HotCacheDecorator implements CacheInterface
     }
 
     /**
+     * Flush only hot-cache
+     */
+    public function flushHot()
+    {
+        $this->hot = [];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function mget(array $keys)
