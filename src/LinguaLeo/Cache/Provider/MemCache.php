@@ -95,8 +95,7 @@ class MemCache extends CacheProvider
      */
     public function create($key, callable $modifier, $ttl = 0)
     {
-        $token = null;
-        $data = $this->memcached->get($key, null, $token);
+        list($data, $token) = $this->get_with_cas($key);
         if (false === $data) {
             $modifier($data);
             $result = $this->memcached->add($key, $data, $ttl);
@@ -122,8 +121,7 @@ class MemCache extends CacheProvider
      */
     public function update($key, callable $modifier, $ttl = 0)
     {
-        $token = null;
-        $data = $this->memcached->get($key, null, $token);
+        list($data, $token) = $this->get_with_cas($key);
         if (false === $data) {
             return false;
         }
@@ -139,6 +137,19 @@ class MemCache extends CacheProvider
                 $token
             )
         );
+    }
+
+    protected function get_with_cas($key)
+    {
+        if (defined('Memcached::GET_EXTENDED')) { // php-memcached >= 3.0.0a1 (?)
+            $entry = $this->memcached->get($key, null, Memcached::GET_EXTENDED);
+            $value  = $entry['value'] ?? false;
+            $cas    = $entry['cas']   ?? null;
+        } else {
+            $cas = null;
+            $value = $this->memcached->get($key, null, $cas);
+        }
+        return [$value, $cas];
     }
 
     /**
